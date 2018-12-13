@@ -23,7 +23,7 @@ Credits:
 
  	Author: (current developer)
  	* eco1999 AKA Max_Andolini
-	Version: 3.6	(CantBeJohn's edited version)
+	Version: 3.6	(CantBeKarma's edited version)
 SQL_ReadRetrievedRows has been changed and now can be used as SQL::ReadRetrievedRows to match the existing style.
 */
 
