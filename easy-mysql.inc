@@ -23,7 +23,7 @@ Credits:
 
  	Author: (current developer)
  	* eco1999 AKA Max_Andolini
-	Version: 3.6
+	Version: 3.6	(CantBeJohn's edited version)
 SQL_ReadRetrievedRows has been changed and now can be used as SQL::ReadRetrievedRows to match the existing style.
 */
 
@@ -63,7 +63,9 @@ SQL_ReadRetrievedRows has been changed and now can be used as SQL::ReadRetrieved
 #endif
 
 #define SQL_MAX_TABLE_NAME 					(64)
+#if !defined SQL_MAX_QUERY_LENGTH
 #define SQL_MAX_QUERY_LENGTH				(8192)
+#endif
 #define SQL_MAX_INDEXES						(4)
 #define SQL_INVALID_HANDLE					(-1)
 #define SQL_FORM_LENGTH						(256)
@@ -992,6 +994,7 @@ stock MySQL:SQL::Connect(const host[], const user[], const password[], const dat
 	if(mysql_errno(SQL::mc) != 0)
 	{
 		SQL_Warning("Could not connect to database %s on host %s | user %s and password %s", database, host, user, password);
+		SendRconCommand("exit");
 	}
 	else
 	{
@@ -1223,10 +1226,10 @@ stock SQL::DeleteRowEx(const table[], const column_where[] = "", const row_ident
 
 stock SQL::DeleteRowEx2(const table[], const column_where[] = "", const row_identifier[] = "", const column_where2[] = "", const row_identifier2[] = "", row_identifier3 = -1, limit = -1, limit2 = -1, MySQL:connectionHandle = MYSQL_DEFAULT_HANDLE)
 {
-	format(SQL::upd_form, sizeof(SQL::upd_form), "DELETE FROM `%s` WHERE `%s`='%e'", table, column_where, row_identifier);
+	mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "DELETE FROM `%s` WHERE `%s`='%e'", table, column_where, row_identifier);
 	if(!isnull(column_where2) && !isnull(row_identifier2) && row_identifier3 == -1)
 	{
-		format(SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`='%e'", column_where2, row_identifier2);
+		mysql_format(connectionHandle, SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`='%e'", column_where2, row_identifier2);
 		strcat(SQL::upd_form, SQL::upd_form2);
 	}
 	if(!isnull(column_where2) && row_identifier3 != -1 && isnull(row_identifier2))
@@ -1517,7 +1520,7 @@ stock SQL::GetStringEntryEx2(const table[], const field[], const column_where[] 
 	mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "SELECT `%s` FROM `%s` WHERE `%s`%s'%e'", field, table, column_where, column_whereo, scolumn_where);
 	if(!isnull(column_where2) && !isnull(scolumn_where2) && scolumn_where3 == -1)
 	{
-		format(SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`%s'%e'", column_where2, column_whereo2, scolumn_where2);
+		mysql_format(connectionHandle, SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`%s'%e'", column_where2, column_whereo2, scolumn_where2);
 		strcat(SQL::upd_form, SQL::upd_form2);
 	}
 	if(!isnull(column_where2) && scolumn_where3 != -1 && isnull(scolumn_where2))
@@ -1582,7 +1585,7 @@ stock SQL::t_GetStringEntryEx2(const table[], const field[], const column_where[
 	mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "SELECT `%s` FROM `%s` WHERE `%s`%s'%e'", field, table, column_where, column_whereo, scolumn_where);
 	if(!isnull(column_where2) && !isnull(scolumn_where2) && scolumn_where3 == -1)
 	{
-		format(SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`%s'%e'", column_where2, column_whereo2, scolumn_where2);
+		mysql_format(connectionHandle, SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`%s'%e'", column_where2, column_whereo2, scolumn_where2);
 		strcat(SQL::upd_form, SQL::upd_form2);
 	}
 	if(!isnull(column_where2) && scolumn_where3 != -1 && isnull(scolumn_where2))
@@ -1645,7 +1648,7 @@ stock SQL::GetIntEntryEx2(const table[], const field[], const column_where[] = "
 	mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "SELECT `%s` FROM `%s` WHERE `%s`%s'%e'", field, table, column_where, column_whereo, scolumn_where);
 	if(!isnull(column_where2) && !isnull(scolumn_where2) && scolumn_where3 == -1)
 	{
-		format(SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`%s'%e'", column_where2, column_whereo2, scolumn_where2);
+		mysql_format(connectionHandle, SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`%s'%e'", column_where2, column_whereo2, scolumn_where2);
 		strcat(SQL::upd_form, SQL::upd_form2);
 	}
 	if(!isnull(column_where2) && scolumn_where3 != -1 && isnull(scolumn_where2))
@@ -1706,7 +1709,7 @@ stock Float:SQL::GetFloatEntryEx2(const table[], const field[], const column_whe
 	mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "SELECT `%s` FROM `%s` WHERE `%s`%s'%e'", field, table, column_where, column_whereo, scolumn_where);
 	if(!isnull(column_where2) && !isnull(scolumn_where2) && scolumn_where3 == -1)
 	{
-		format(SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`%s'%e'", column_where2, column_whereo2, scolumn_where2);
+		mysql_format(connectionHandle, SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`%s'%e'", column_where2, column_whereo2, scolumn_where2);
 		strcat(SQL::upd_form, SQL::upd_form2);
 	}
 	if(!isnull(column_where2) && scolumn_where3 != -1 && isnull(scolumn_where2))
@@ -2187,7 +2190,7 @@ stock SQL::SetIntEntryEx2(const table[], const field[], value, const column_wher
 	mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "UPDATE `%s` SET `%s`='%d' WHERE `%s`='%e'", table, field, value, column_where, row_identifier);
 	if(!isnull(column_where2) && !isnull(row_identifier2) && row_identifier3 == -1)
 	{
-		format(SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`='%e'", column_where2, row_identifier2);
+		mysql_format(connectionHandle, SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`='%e'", column_where2, row_identifier2);
 		strcat(SQL::upd_form, SQL::upd_form2);
 	}
 	if(!isnull(column_where2) && row_identifier3 != -1 && isnull(row_identifier2))
@@ -2228,7 +2231,7 @@ stock SQL::SetStringEntry2(const table[], const field[], const value[], const co
 	}
 	else
 	{
- 		format(SQL::upd_form, sizeof(SQL::upd_form), "UPDATE `%s` SET `%s`='%e' WHERE `%s`='%d'", table, field, value, column_where, row_identifier);
+ 		mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "UPDATE `%s` SET `%s`='%e' WHERE `%s`='%d'", table, field, value, column_where, row_identifier);
 	}
 	if(!isnull(column_where2) && row_identifier2 != -1 && isnull(row_identifier3))
 	{
@@ -2269,15 +2272,15 @@ stock SQL::SetStringEntryEx2(const table[], const field[], const value[], const 
 	if(use_real_escape == true)
 	{
 		//Not using mysql_escape_string as the %e specifier is faster.
- 		format(SQL::upd_form, sizeof(SQL::upd_form), "UPDATE `%s` SET `%s`='%e' WHERE `%s`='%e'", table, field, value, column_where, row_identifier);
+ 		mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "UPDATE `%s` SET `%s`='%e' WHERE `%s`='%e'", table, field, value, column_where, row_identifier);
 	}
 	else
 	{
-  		format(SQL::upd_form, sizeof(SQL::upd_form), "UPDATE `%s` SET `%s`='%s' WHERE `%s`='%e'", table, field, value, column_where, row_identifier);
+  		mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "UPDATE `%s` SET `%s`='%s' WHERE `%s`='%e'", table, field, value, column_where, row_identifier);
 	}
 	if(!isnull(column_where2) && !isnull(row_identifier2) && row_identifier3 == -1)
 	{
-		format(SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`='%e'", column_where2, row_identifier2);
+		mysql_format(connectionHandle, SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`='%e'", column_where2, row_identifier2);
 		strcat(SQL::upd_form, SQL::upd_form2);
 	}
 	if(!isnull(column_where2) && row_identifier3 != -1 && isnull(row_identifier2))
@@ -2332,10 +2335,10 @@ stock SQL::SetFloatEntryEx2(const table[], const field[], Float:value, const col
 {
 	if(!table[0]) return 0;
 	if(!field[0]) return 0;
-	format(SQL::upd_form, sizeof(SQL::upd_form), "UPDATE `%s` SET `%s`='%f' WHERE `%s`='%e'", table, field, value, column_where, row_identifier);
+	mysql_format(connectionHandle, SQL::upd_form, sizeof(SQL::upd_form), "UPDATE `%s` SET `%s`='%f' WHERE `%s`='%e'", table, field, value, column_where, row_identifier);
 	if(!isnull(column_where2) && !isnull(row_identifier2) && row_identifier3 == -1)
 	{
-		format(SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`='%e'", column_where2, row_identifier2);
+		mysql_format(connectionHandle, SQL::upd_form2, sizeof(SQL::upd_form2), " AND `%s`='%e'", column_where2, row_identifier2);
 		strcat(SQL::upd_form, SQL::upd_form2);
 	}
 	if(!isnull(column_where2) && row_identifier3 != -1 && isnull(row_identifier2))
@@ -2385,6 +2388,34 @@ stock SQL::ExistsTable(const tablename[], MySQL:connectionHandle = MYSQL_DEFAULT
 	return 0;
 }
 
+stock SQL::CountRowsEx(const tablename[], const column_where[] = "", const row_identifier[], MySQL:connectionHandle = MYSQL_DEFAULT_HANDLE)
+{
+    new query[SQL_FORM_LENGTH], Cache:result, rows;
+    mysql_format(connectionHandle, query, sizeof(query),"SELECT * FROM `%s` WHERE `%s`='%e' ", tablename, column_where, row_identifier);
+    result = mysql_query(connectionHandle, query);
+    if(mysql_errno() != 0)
+    {
+        return SQL_Warning("Query could not be completed due to error: %s", query);
+    }
+    cache_get_row_count(rows);
+    cache_delete(result);
+    return rows;
+}
+
+stock SQL::CountRowsEx2(const tablename[], const column_where[] = "", const row_identifier = -1, MySQL:connectionHandle = MYSQL_DEFAULT_HANDLE)
+{
+    new query[SQL_FORM_LENGTH], Cache:result, rows;
+    mysql_format(connectionHandle, query, sizeof(query),"SELECT * FROM `%s` WHERE `%s`='%d' ", tablename, column_where, row_identifier);
+    result = mysql_query(connectionHandle, query);
+    if(mysql_errno() != 0)
+    {
+        return SQL_Warning("Query could not be completed due to error: %s", query);
+    }
+    cache_get_row_count(rows);
+    cache_delete(result);
+    return rows;
+}
+
 stock SQL::CountRows(const tablename[], MySQL:connectionHandle = MYSQL_DEFAULT_HANDLE)
 {
 	new query[SQL_FORM_LENGTH], Cache:result, rows;
@@ -2420,10 +2451,10 @@ stock SQL::RowExistsEx(const table[], const column_where[] = "", const row_ident
 stock SQL::RowExistsEx2(const table[], const column_where[] = "", const row_identifier[], const column_where2[] = "", const row_identifier2[] = "", row_identifier3 = -1, MySQL:connectionHandle = MYSQL_DEFAULT_HANDLE)
 {
 	new query[SQL_FORM_LENGTH], query2[SQL_FORM_LENGTH], Cache:result, rows;
-	format(query, sizeof(query), "SELECT * FROM `%s` WHERE `%s`='%e'", table, column_where, row_identifier);
+	mysql_format(connectionHandle, query, sizeof(query), "SELECT * FROM `%s` WHERE `%s`='%e'", table, column_where, row_identifier); // This wasn't "MYSQL_FORMAT"; causing it not to work.
 	if(!isnull(column_where2) && !isnull(row_identifier2) && row_identifier3 == -1)
 	{
-		format(query2, sizeof(query2), " AND `%s`='%e'", column_where2, row_identifier2);
+		mysql_format(connectionHandle, query2, sizeof(query2), " AND `%s`='%e'", column_where2, row_identifier2); // This wasn't "MYSQL_FORMAT"; causing it not to work.
 		strcat(query, query2);
 	}
 	if(!isnull(column_where2) && row_identifier3 != -1 && isnull(row_identifier2))
